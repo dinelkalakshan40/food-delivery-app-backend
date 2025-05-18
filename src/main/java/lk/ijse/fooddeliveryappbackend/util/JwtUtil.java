@@ -43,9 +43,10 @@ public class JwtUtil {
         return claimsResolver.apply(claims);
     }
     private Claims extractAllClaims(String token){
-        return Jwts.parser()
+        return Jwts.parserBuilder()
                 .setSigningKey(SECRET_KRY)
-                .parseClaimsJwt(token)
+                .build()
+                .parseClaimsJws(token)
                 .getBody();
     }
     private Boolean isTokenExpired(String token){
