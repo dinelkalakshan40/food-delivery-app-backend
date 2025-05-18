@@ -6,11 +6,15 @@ import lk.ijse.fooddeliveryappbackend.io.FoodResponse;
 import lk.ijse.fooddeliveryappbackend.repository.FoodRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +43,27 @@ public class FoodServiceImpl implements FoodService{
         return convertToResponse(savedEntity);
 
     }
+
+    @Override
+    public List<FoodResponse> readFoods() {
+        List<FoodEntity> list =foodRepository.findAll();
+        return list.stream().map(object ->convertToResponse(object)).collect(Collectors.toList());
+    }
+
+    @Override
+    public FoodResponse readFood(String id) {
+        FoodEntity existingFood= foodRepository.findById(id).orElseThrow(()->new RuntimeException("Food not found"));
+        return convertToResponse(existingFood);
+    }
+
+    @Override
+    public void deleteFood(String id) {
+        if(!foodRepository.existsById(id)){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Food not found with id: " + id);
+        }
+        foodRepository.deleteById(id);
+    }
+
     private FoodEntity convertToEntity(FoodRequest request){
         return FoodEntity.builder()
                 .name(request.getName())

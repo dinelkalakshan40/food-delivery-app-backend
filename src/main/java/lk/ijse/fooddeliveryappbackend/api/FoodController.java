@@ -8,16 +8,17 @@ import lk.ijse.fooddeliveryappbackend.service.FoodService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/foods")
 @AllArgsConstructor
+@CrossOrigin("*")
 public class FoodController {
 
     private FoodService foodService;
@@ -34,5 +35,18 @@ public class FoodController {
 
         }
         return foodService.addFood(request, file);
+    }
+    @GetMapping
+    public List<FoodResponse> readFoods(){
+        return foodService.readFoods();
+    }
+    @GetMapping("/{id}")
+    public FoodResponse readFood(@PathVariable String id){
+            return foodService.readFood(id);
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteFood(@PathVariable String id){
+        foodService.deleteFood(id);
+        return ResponseEntity.ok("Food deleted");
     }
 }
